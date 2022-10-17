@@ -1,8 +1,11 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+import CollectionItems from '../components/collectionItems'
 
 const Home: NextPage = ({collection}) => {
+  const testReleaseArray = new Array(30).fill(1).map((_, i) => `Release ${i + 1}`);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -14,6 +17,19 @@ const Home: NextPage = ({collection}) => {
         <header>
           <h1>My Discogs Collection</h1>
         </header>
+        <div className='collection flex flex-wrap'>
+          {collection.releases.map(function(release, i){
+            return (
+              <div className='collection__item w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5' key={i}>
+                <img src={release.basic_information.cover_image} className="aspect-square" alt="Album artwork" />
+                <div>
+                  <h2>{release.basic_information.title} by {release.basic_information.artists[0].name}</h2>
+                  <a href="">Link to the Dicogs page</a>
+                </div>
+              </div>
+            )
+          })}
+        </div>
         {collection.pagination.items}
       </main>
     </div>
