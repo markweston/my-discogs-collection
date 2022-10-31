@@ -1,15 +1,15 @@
 import { useRouter } from 'next/router'
 
-const Release = (data) => {
+const Release = (release) => {
   const router = useRouter()
   const { rid } = router.query
 
-  console.log(data.releases)
+  console.log(release)
 
   return (
     <div>
       <p>Release: {rid}</p>
-      <p>Title {data.release.releases[0].basic_information.title}</p>
+      <p>Title {release.release.releases[0].basic_information.title}</p>
     </div>
   )
 }
@@ -20,12 +20,14 @@ export async function getServerSideProps(context) {
     const release_id = context.params.rid
     const resUrl = `https://api.discogs.com/users/mweston/collection/releases/${release_id}?&token=${token}`;
     const res = await fetch(resUrl);
-    const data = await res.json();
+    const release = await res.json();
+
+    console.log(resUrl);
   
     // Return release to Release component
     return {
       props: {
-        data,
+        release,
       },
     }
 }

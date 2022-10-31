@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import Link from 'next/link'
 
 const Home: NextPage = ({collection}) => {
   return (
@@ -45,7 +46,7 @@ const Home: NextPage = ({collection}) => {
                   </div>
                   <div className='collection-item__back absolute w-full h-full bg-black text-white'>
                     <h2>{release.basic_information.title} by {release.basic_information.artists[0].name}</h2>
-                    <a href="">Link to the Dicogs page</a>
+                    <Link href={`/release/${release.id}`}>View release</Link>
                   </div>
                 </div>
               </div>
