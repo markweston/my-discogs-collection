@@ -2,8 +2,6 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 
 const Home: NextPage = ({collection}) => {
-  const testReleaseArray = new Array(30).fill(1).map((_, i) => `Release ${i + 1}`);
-
   return (
     <div>
       <Head>
