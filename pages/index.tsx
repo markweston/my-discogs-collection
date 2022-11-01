@@ -1,8 +1,11 @@
+import { Console } from 'console'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 
 const Home: NextPage = ({collection}) => {
+  console.log(collection.length);
+
   return (
     <div>
       <Head>
@@ -11,9 +14,6 @@ const Home: NextPage = ({collection}) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <header>
-          <h1>My Discogs Collection</h1>
-        </header>
         <style jsx>{`
           .collection-item {
             perspective: 1000px;
@@ -37,7 +37,7 @@ const Home: NextPage = ({collection}) => {
           }
         `}</style>
         <div className='collection flex flex-wrap'>
-          {collection.releases.map(function(release, i){
+          {collection.map(function(release, i){
             return (
               <div className='collection-item w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 aspect-square' key={i}>
                 <div className='collection-item__inner relative w-full h-full text-center transition-transform ease-linear duration-500'>
@@ -53,7 +53,7 @@ const Home: NextPage = ({collection}) => {
             )
           })}
         </div>
-        {collection.pagination.items}
+        {/* {collection.pagination.items} */}
       </main>
     </div>
   )
@@ -62,10 +62,23 @@ const Home: NextPage = ({collection}) => {
 export async function getStaticProps() {
   // Call an Discogs API endpoint to get my collection.
   const token = process.env.DISCOGS_API_TOKEN
-  const resUrl = `https://api.discogs.com/users/mweston/collection/folders/0/releases?&token=${token}`;
+  const resUrl = `https://api.discogs.com/users/mweston/collection/folders/0/releases?&per_page=100&token=${token}`;
   const res = await fetch(resUrl);
-  const collection = await res.json();
+  const resJson = await res.json();
+  const collection = resJson.releases;
 
+  /**
+   * When there is more than one page to the collection i.e. collection larger than per_page in request
+   * Loop through pages, requesting remaining collection items and merging the array of releases together
+   */
+  
+  if(resJson.pagination.pages != 1) {
+    for(let page = 2; page <= resJson.pagination.pages; page++) {
+      let nextPageRes = await fetch(resJson.pagination.urls.next);
+      let nextPageCollection = await nextPageRes.json();
+      collection.push(...nextPageCollection.releases);
+    }
+  }
   // Return collection to Home component
   return {
     props: {
